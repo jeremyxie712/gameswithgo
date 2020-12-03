@@ -115,8 +115,8 @@ func quizTime(parsedQuestions [][]string) {
 }
 
 func report(questions [][]string) {
-	fmt.Printf("\nYou have answered %d questions, total questions: %d, correct number of questions: %d", numAnswered, len(questions), numCorrect)
-
+	fmt.Printf("\nYou have answered %d questions, total questions: %d, correct number of questions: %d\n", numAnswered, len(questions), numCorrect)
+	os.Exit(0)
 }
 
 func main() {
