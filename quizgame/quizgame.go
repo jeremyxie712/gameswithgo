@@ -1,19 +1,25 @@
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"strings"
+	"time"
 )
 
 var (
+	scanner      = bufio.NewScanner(os.Stdin)
+	filename     = flag.String("path", "problems.csv", "Path to csv files containing 'question-answer' pairs")
+	timeInterval = flag.Int("limit", 30, "Time allowed for each question in seconds.")
 	problemsFile string
-	timeInterval int
 	numCorrect   int
+	numAnswered  int
 	comparison   bool
+	need         bool
 	userAnswer   string
 )
 
@@ -22,8 +28,21 @@ type problems struct { //This way, the type problems could be used by other func
 	a string
 }
 
-func preprocess(input string) string {
-	return strings.ToLower(strings.Trim(input, "\n\t\r\n"))
+func loadCSV(path string) [][]string {
+	flag.Parse()
+	file, err := os.Open(*filename)
+	if err != nil {
+		log.Fatalln("Failed to open the csv file", err)
+		os.Exit(1)
+	}
+	defer file.Close()
+
+	lineInfo, err := csv.NewReader(file).ReadAll()
+	if err != nil {
+		log.Fatalln("Failed to open the problem set", err)
+		os.Exit(1)
+	}
+	return lineInfo
 }
 
 func parseProblems(lines [][]string) []problems {
@@ -40,6 +59,7 @@ func parseProblems(lines [][]string) []problems {
 	}
 	return res
 }
+
 func parseLines(lines [][]string) [][]string {
 	if len(lines) == 0 || len(lines[0]) == 0 {
 		fmt.Print("Failed to open csv filles at parsing.")
@@ -55,42 +75,59 @@ func parseLines(lines [][]string) [][]string {
 	}
 	return res
 }
-func main() {
-	filename := flag.String("csv", "problems.csv", "a csv file in the format of 'questions,answers")
-	// flag.StringVar(&problemsFile, "probs", "problems.csv", "This is the problem set.")
-	// flag.IntVar(&timeInterval, "time interval", 30, "Time for a single question.")
-	flag.Parse()
 
-	file, err := os.Open(*filename)
-	if err != nil {
-		log.Fatalln("Failed to open the csv file", err)
-		os.Exit(1)
-	}
-	defer file.Close()
-
-	lineInfo, err := csv.NewReader(file).ReadAll()
-	if err != nil {
-		log.Fatalln("Failed to open the problem set", err)
-		os.Exit(1)
-	}
-
-	parsedLines := parseProblems(lineInfo)
-	parsedSlices := parseLines(lineInfo)
+func sanityCheck(comparison bool, parsedLines []problems, parsedSlices [][]string) {
 	if comparison {
 		fmt.Println("Parsing using problem struct: ")
 		fmt.Println(parsedLines[0])
 		fmt.Println("Parsing using two dimensional slices: ")
 		fmt.Println(parsedSlices[0])
 	}
+}
 
-	for idx, p := range parsedSlices {
-		fmt.Printf("Question: #%d: What is %s = ?\n", idx+1, p[0])
-		fmt.Scanf("%s\n", &userAnswer)
-		if userAnswer == p[1] {
-			numCorrect++
-		} else {
-			fmt.Println("Oops! Not right. Keep it up!")
+func quizTime(parsedQuestions [][]string) {
+	if len(parsedQuestions) == 0 || len(parsedQuestions[0]) == 0 || parsedQuestions == nil {
+		fmt.Println("Failed to read parsed csv.")
+		os.Exit(1)
+	}
+	timer := time.NewTimer(time.Duration(*timeInterval) * time.Second)
+	for idx, p := range parsedQuestions {
+		fmt.Printf("Question #%v: What is %v = ", idx+1, p[0])
+		answerChan := make(chan string)
+		go func() {
+			scanner.Scan()
+			userAnswer := scanner.Text()
+			answerChan <- userAnswer
+		}()
+		select {
+		case <-timer.C:
+			report(parsedQuestions)
+			return
+		case answer := <-answerChan:
+			if answer == p[1] {
+				numCorrect++
+			} else {
+				fmt.Println("Oops. Almost there, keep it up!")
+			}
+			numAnswered++
 		}
 	}
-	fmt.Printf("You have scored %s questions out of %s\n", numCorrect, len(parsedSlices))
+}
+
+func report(questions [][]string) {
+	fmt.Printf("\nYou have answered %d questions, total questions: %d, correct number of questions: %d", numAnswered, len(questions), numCorrect)
+
+}
+
+func main() {
+	lines := loadCSV(*filename)
+
+	parsedLines := parseProblems(lines)
+	parsedSlices := parseLines(lines)
+
+	if need {
+		sanityCheck(comparison, parsedLines, parsedSlices)
+	}
+
+	quizTime(parsedSlices)
 }
