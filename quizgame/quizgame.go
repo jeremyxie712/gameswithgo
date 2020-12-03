@@ -15,7 +15,6 @@ var (
 	scanner      = bufio.NewScanner(os.Stdin)
 	filename     = flag.String("path", "problems.csv", "Path to csv files containing 'question-answer' pairs")
 	timeInterval = flag.Int("limit", 30, "Time allowed for each question in seconds.")
-	problemsFile string
 	numCorrect   int
 	numAnswered  int
 	comparison   bool
