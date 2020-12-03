@@ -1,10 +1,15 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"gameswithgo/urlshort"
 	"net/http"
 	// "github.com/gophercises/urlshort"
+)
+
+var (
+	ymlpath = flag.String("ymlpath", "../data/test.yml", "Path to the yaml file")
 )
 
 func main() {
@@ -14,19 +19,16 @@ func main() {
 	pathsToUrls := map[string]string{
 		"/urlshort-godoc": "https://godoc.org/github.com/gophercises/urlshort",
 		"/yaml-godoc":     "https://godoc.org/gopkg.in/yaml.v2",
-		"/linkprof":       "https://linkedin.com/in/lingexie",
-		"/gitprof":        "https://github.com/jeremyxie712",
-		"/hupu":           "https://soccer.hupu.com",
 	}
 	mapHandler := urlshort.MapHandler(pathsToUrls, mux)
 
 	// Build the YAMLHandler using the mapHandler as the
 	// fallback
 	yaml := `
-	- path: /urlshort
-	  url: https://github.com/gophercises/urlshort
-	- path: /urlshort-final
-	  url: https://github.com/gophercises/urlshort/tree/solution
+    - path: /urlshort
+	   url: https://github.com/gophercises/urlshort
+    - path: /urlshort-final
+       url: https://github.com/gophercises/urlshort/tree/solution
 	`
 	yamlHandler, err := urlshort.YAMLHandler([]byte(yaml), mapHandler)
 	if err != nil {

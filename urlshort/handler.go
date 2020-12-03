@@ -14,14 +14,20 @@ import (
 // If the path is not provided in the map, then the fallback
 // http.Handler will be called instead.
 func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		pathToURL, ok := pathsToUrls[r.URL.Path]
-		if ok == false {
-			http.Redirect(w, r, pathToURL, http.StatusMovedPermanently)
-		} else {
-			fallback.ServeHTTP(w, r)
+	return func(w http.ResponseWriter, r *http.Request) {
+		URL := pathsToUrls[r.URL.Path]
+		if URL != "" {
+			http.Redirect(w, r, URL, http.StatusFound)
+			return
 		}
-	})
+		fallback.ServeHTTP(w, r)
+	}
+}
+
+//YAMLMap is built to store path and urls
+type YAMLMap struct {
+	path string `yaml:"path"`
+	URL  string `yaml:"url"`
 }
 
 // YAMLHandler will parse the provided YAML and then return
@@ -40,11 +46,6 @@ func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.Handl
 //
 // See MapHandler to create a similar http.HandlerFunc via
 // a mapping of paths to urls.
-type YAMLMap struct {
-	Path string
-	URL  string
-}
-
 func YAMLHandler(yml []byte, fallback http.Handler) (http.HandlerFunc, error) {
 	pathsUrls, err := parseYAML(yml)
 	if err != nil {
@@ -70,7 +71,7 @@ func mapBuilder(ymlMap []YAMLMap) map[string]string {
 	}
 	mapToUrls := make(map[string]string)
 	for _, v := range ymlMap {
-		mapToUrls[v.Path] = v.URL
+		mapToUrls[v.path] = v.URL
 	}
 	return mapToUrls
 }
