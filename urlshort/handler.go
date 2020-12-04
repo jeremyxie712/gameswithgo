@@ -1,7 +1,10 @@
 package urlshort
 
 import (
+	"errors"
 	"net/http"
+
+	"gopkg.in/yaml.v2"
 )
 
 // MapHandler will return an http.HandlerFunc (which also
@@ -21,6 +24,32 @@ func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.Handl
 	}
 }
 
+// Type of path that stores the path and url information for yaml
+type pathUrl struct {
+	path string `yaml:"path"`
+	url  string `yaml:"url"`
+}
+
+func yamlParser(ymlData []byte) (ymlParsed []pathUrl, err error) {
+	if len(ymlData) == 0 {
+		err := errors.New("YAML is empty")
+		return nil, err
+	}
+	err = yaml.Unmarshal(ymlData, &ymlParsed)
+	return
+}
+
+func mapBuilder(ymlData []pathUrl) map[string]string {
+	if len(ymlData) == 0 {
+		return nil
+	}
+	m := make(map[string]string)
+	for _, v := range ymlData {
+		m[v.path] = v.url
+	}
+	return m
+}
+
 // YAMLHandler will parse the provided YAML and then return
 // an http.HandlerFunc (which also implements http.Handler)
 // that will attempt to map any paths to their corresponding
@@ -38,6 +67,10 @@ func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.Handl
 // See MapHandler to create a similar http.HandlerFunc via
 // a mapping of paths to urls.
 func YAMLHandler(yml []byte, fallback http.Handler) (http.HandlerFunc, error) {
-	// TODO: Implement this...
-	return nil, nil
+	if len(yml) == 0 || yml == nil {
+		return nil, errors.New("YAML data is empty")
+	}
+	ymlParsed, err := yamlParser(yml)
+	builtMap := mapBuilder(ymlParsed)
+	return MapHandler(builtMap, fallback), err
 }

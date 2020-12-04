@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"gameswithgo/urlshort"
 	"net/http"
-
-	"github.com/gophercises/urlshort"
+	// "github.com/gophercises/urlshort"
 )
 
 func main() {
@@ -14,6 +14,7 @@ func main() {
 	pathsToUrls := map[string]string{
 		"/urlshort-godoc": "https://godoc.org/github.com/gophercises/urlshort",
 		"/yaml-godoc":     "https://godoc.org/gopkg.in/yaml.v2",
+		"/hupu":           "https://soccer.hupu.com",
 	}
 	mapHandler := urlshort.MapHandler(pathsToUrls, mux)
 
@@ -24,6 +25,8 @@ func main() {
   url: https://github.com/gophercises/urlshort
 - path: /urlshort-final
   url: https://github.com/gophercises/urlshort/tree/solution
+- path: /hupu
+  url: https://soccer.hupu.com
 `
 	yamlHandler, err := urlshort.YAMLHandler([]byte(yaml), mapHandler)
 	if err != nil {
