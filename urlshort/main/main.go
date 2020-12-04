@@ -64,23 +64,19 @@ func main() {
 
 	var handler http.Handler
 	var err error
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	switch filepath.Ext(*pathToFile) {
-	case "*.yml":
-		handler, err := urlshort.YAMLHandler(turnFileToBytes(*pathToFile), mux)
+	case ".yml":
+		handler, err = urlshort.YAMLHandler(turnFileToBytes(*pathToFile), mux)
 		if err != nil {
 			panic(err)
 		}
-	case "*.json":
-		handler, err := urlshort.JSONHandler(turnFileToBytes(*pathToFile), mux)
+	case ".json":
+		handler, err = urlshort.JSONHandler(turnFileToBytes(*pathToFile), mux)
 		if err != nil {
 			panic(err)
 		}
-	case "*.db":
+	case ".db":
 		if *approvalToDB {
 			db, err := createDB()
 			if err != nil {
