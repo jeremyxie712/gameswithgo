@@ -1,6 +1,7 @@
 package urlshort
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 
@@ -67,10 +68,29 @@ func mapBuilder(ymlData []pathUrl) map[string]string {
 // See MapHandler to create a similar http.HandlerFunc via
 // a mapping of paths to urls.
 func YAMLHandler(yml []byte, fallback http.Handler) (http.HandlerFunc, error) {
-	if len(yml) == 0 || yml == nil {
-		return nil, errors.New("YAML data is empty")
-	}
 	ymlParsed, err := yamlParser(yml)
+	if err != nil {
+		return nil, err
+	}
 	builtMap := mapBuilder(ymlParsed)
 	return MapHandler(builtMap, fallback), err
+}
+
+func jsonParser(jsonData []byte) (jsonParsed []pathUrl, err error) {
+	if len(jsonData) == 0 {
+		err := errors.New("JSON is empty")
+		return jsonParsed, err
+	}
+	err = json.Unmarshal(jsonData, &jsonParsed)
+	return
+}
+
+//JSON Handler
+func JSONHandler(json []byte, fallback http.Handler) (http.HandlerFunc, error) {
+	jsonParsed, err := jsonParser(json)
+	if err != nil {
+		return nil, err
+	}
+	mapJson := mapBuilder(jsonParsed)
+	return MapHandler(mapJson, fallback), err
 }
