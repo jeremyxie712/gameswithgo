@@ -101,7 +101,7 @@ func JSONHandler(json []byte, fallback http.Handler) (http.HandlerFunc, error) {
 }
 
 func (h *handler) BoltDBHandler(db *bolt.DB, fallback http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var url string
 		err := h.db.View(func(tx *bolt.Tx) error {
 			buc := tx.Bucket([]byte("paths"))
@@ -116,5 +116,5 @@ func (h *handler) BoltDBHandler(db *bolt.DB, fallback http.Handler) http.Handler
 		} else {
 			http.Redirect(w, r, url, http.StatusFound)
 		}
-	}
+	})
 }
