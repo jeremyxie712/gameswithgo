@@ -1,12 +1,14 @@
 package main
 
 import (
-	"log"
 	"bytes"
 	"flag"
 	"fmt"
 	"gameswithgo/urlshort"
+	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/boltdb/bolt"
@@ -25,28 +27,29 @@ func createDB() (*bolt.DB, error) {
 	}
 	defer os.Remove(db.Path())
 	if err := db.Update(func(tx *bolt.Tx) error {
-		b ,err := tx.CreateBucketIfNotExists([]byte("paths"))
+		b, err := tx.CreateBucketIfNotExists([]byte("paths"))
 		if err != nil {
-			return db, err
+			return err
 		}
-		if err := b.Put([]byte("/urlshort"),[]byte("https://github.com/gophercises/urlshort")); err != nil {
-			return db, err
+		if err := b.Put([]byte("/urlshort"), []byte("https://github.com/gophercises/urlshort")); err != nil {
+			return err
 		}
-		if err := b.Put([]byte("/urlshort-final"),[]byte("https://github.com/gophercises/urlshort/tree/solution"))l err != nil {
-			return db, err
+		if err := b.Put([]byte("/urlshort-final"), []byte("https://github.com/gophercises/urlshort/tree/solution")); err != nil {
+			return err
 		}
-		return db, nil
+		return nil
 	}); err != nil {
 		log.Fatal(err)
 	}
+	return db, err
 }
 
 func turnFileToBytes(filename string) []byte {
 	file, err := os.Open(filename)
 	if err != nil {
-		log.Fatalf("Cannot open the file %v\n",filename)
+		log.Fatalf("Cannot open the file %v\n", filename)
 	}
-	buf := bytes.NewBuffer(make([]byte,0))
+	buf := bytes.NewBuffer(make([]byte, 0))
 	_, err = buf.ReadFrom(file)
 	if err != nil {
 		log.Fatalf("Cannot read the file %v\n", filename)
@@ -83,7 +86,7 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			handler = urlshort.BoltDBHandler(db,mux)
+			handler = urlshort.BoltDBHandler(db, mux)
 		}
 	default:
 		log.Fatalln("Paths file is unformatted.")
