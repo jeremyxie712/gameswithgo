@@ -32,10 +32,6 @@ type pathUrl struct {
 	url  string `yaml:"url"`
 }
 
-type handler struct {
-	db *bolt.DB
-}
-
 func yamlParser(ymlData []byte) (ymlParsed []pathUrl, err error) {
 	if len(ymlData) == 0 {
 		err := errors.New("YAML is empty")
@@ -100,10 +96,14 @@ func JSONHandler(json []byte, fallback http.Handler) (http.HandlerFunc, error) {
 	return MapHandler(mapJson, fallback), err
 }
 
-func (h *handler) BoltDBHandler(db *bolt.DB, fallback http.Handler) http.HandlerFunc {
+//DBHandler will use the given Bolt DB and return an http.HandlerFunc
+//that will attempt to map any paths to their corresponding URL.
+//If the path is not provided in the DB, then the fallback http.Handler
+//will be called instead.
+func BoltDBHandler(db *bolt.DB, fallback http.Handler) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var url string
-		err := h.db.View(func(tx *bolt.Tx) error {
+		err := db.View(func(tx *bolt.Tx) error {
 			buc := tx.Bucket([]byte("paths"))
 			bucGet := buc.Get([]byte(r.URL.Path))
 			if bucGet != nil {
