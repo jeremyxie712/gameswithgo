@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/boltdb/bolt"
 	"gopkg.in/yaml.v2"
 )
 
@@ -29,6 +30,10 @@ func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.Handl
 type pathUrl struct {
 	path string `yaml:"path"`
 	url  string `yaml:"url"`
+}
+
+type handler struct {
+	db *bolt.DB
 }
 
 func yamlParser(ymlData []byte) (ymlParsed []pathUrl, err error) {
@@ -93,4 +98,23 @@ func JSONHandler(json []byte, fallback http.Handler) (http.HandlerFunc, error) {
 	}
 	mapJson := mapBuilder(jsonParsed)
 	return MapHandler(mapJson, fallback), err
+}
+
+func (h *handler) BoltDBHandler(db *bolt.DB, fallback http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var url string
+		err := h.db.View(func(tx *bolt.Tx) error {
+			buc := tx.Bucket([]byte("paths"))
+			bucGet := buc.Get([]byte(r.URL.Path))
+			if bucGet != nil {
+				url = string(bucGet)
+			}
+			return nil
+		})
+		if err != nil || url == "" {
+			fallback.ServeHTTP(w, r)
+		} else {
+			http.Redirect(w, r, url, http.StatusFound)
+		}
+	}
 }
