@@ -86,17 +86,33 @@ func jsonParser(jsonData []byte) (jsonParsed []pathUrl, err error) {
 	return
 }
 
-//JSON Handler
+// JSONHandler will parse the provided JSON and then return
+// an http.HandlerFunc (which also implements http.Handler)
+// that will attempt to map any paths to their corresponding
+// URL. If the path is not provided in the JSON, then the
+// fallback http.Handler will be called instead.
+//
+// JSON is expected to be in the format:
+//
+//     [
+//	     {
+//         "path": "/some-path",
+//         "url": "https://www.some-url.com/demo"
+//       }
+//	   ]
+//
+// The only errors that can be returned all related to having
+// invalid JSON data.
 func JSONHandler(json []byte, fallback http.Handler) (http.HandlerFunc, error) {
 	jsonParsed, err := jsonParser(json)
 	if err != nil {
 		return nil, err
 	}
-	mapJson := mapBuilder(jsonParsed)
-	return MapHandler(mapJson, fallback), err
+	mapJSON := mapBuilder(jsonParsed)
+	return MapHandler(mapJSON, fallback), err
 }
 
-//DBHandler will use the given Bolt DB and return an http.HandlerFunc
+//BoltDBHandler will use the given Bolt DB and return an http.HandlerFunc
 //that will attempt to map any paths to their corresponding URL.
 //If the path is not provided in the DB, then the fallback http.Handler
 //will be called instead.
