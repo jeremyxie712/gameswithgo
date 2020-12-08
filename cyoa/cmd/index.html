@@ -11,10 +11,11 @@
         {{end}}
         <ul>
             {{range .Options}}
-            <li><a href="/{{.arc}}"></a></li>>
+            <li><a href="/{{.arc}}">{{.text}}</a></li>
+            {{end}}
         </ul>
     </body>
-</html>>
+</html>
 
 <!-- 
 type storyarc struct {
