@@ -1,12 +1,14 @@
 package jsonparse
 
+type Story map[string]storyarc
+
 type storyarc struct {
-	title   string
-	story   []string
-	Options []options
+	title   string    `json:"title"`
+	story   []string  `json:"story"`
+	Options []options `json:"options"`
 }
 
 type options struct {
-	text string
-	arc  string
+	text string `json:"text"`
+	arc  string `json:"arc"`
 }
