@@ -1,10 +1,11 @@
 package main
 
 import (
-	"log"
-	"os"
+	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
+	"os"
 )
 
 func main() {
@@ -13,7 +14,11 @@ func main() {
 	fmt.Printf("Using the story %v\n", *filename)
 
 	f, err := os.Open(*filenname)
-	if err != nil {[
+	if err != nil {
 		log.Fatal(err)
-	]}
+	}
+
+	d := json.NewDecoder(f)
+	var story jsonparse.Story
+
 }

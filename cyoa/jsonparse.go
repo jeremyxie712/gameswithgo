@@ -1,4 +1,4 @@
-package jsonparse
+package cyoa
 
 type Story map[string]storyarc
 
