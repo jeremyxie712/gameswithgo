@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Choose Your Own Adventure</title>
+    </head>
+    <body>
+        <h1>{{.title}}</h1>
+        {{range .paragraphs}}
+        <p>{{.}}</p>
+        {{end}}
+        <ul>
+            {{range .Options}}
+            <li><a href="/{{.arc}}"></a></li>>
+        </ul>
+    </body>
+</html>>
+
+<!-- 
+type storyarc struct {
+	title      string    `json:"title"`
+	paragraphs []string  `json:"story"`
+	Options    []options `json:"options"`
+}
+
+type options struct {
+	text string `json:"text"`
+	arc  string `json:"arc"`
+}
+-->
