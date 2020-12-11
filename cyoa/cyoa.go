@@ -36,32 +36,30 @@ var tpl *template.Template
 var defaultHandlerTmpl = `
 <!DOCTYPE html>
 <head>
+    <meta charset="UTF-8">
     <title>{{.Title}}</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
-  <body class="grey lighten-4">
-    <div class="row">
-        <div class="col m12">
-          <div class="card large horizontal z-depth-4 brown white-text">
-            <div class="card-stacked">
-              <h2 class="card-title">{{.Title}}</h2>
-              <div class="card-content">
-                {{range .Story}}
-                  <p>{{.}}</p>
-                {{end}}
-              </div>
-              <div class="card-action">
+</head>
+<body>
+    <h1>{{.Title}}</h1>
+    <div class="story-content">
+        {{range .Story}}
+            <p>{{.}}</p>
+        {{end}}
+    </div>
+    <div class="variations-links">
+        {{if .Options }}
+            <ul>
                 {{range .Options}}
-                  <a href="{{.Arc}}">{{.Text}}</p>
+                    <li class="link-container">
+                        <a href="{{.Arc}}">{{.Text}}</a>
+                    </li>
                 {{end}}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-  </body>`
+            </ul>
+        {{else}}
+            <p ><b>The End !</b></p>
+        {{end}}
+    </div>
+</body>`
 
 func ParseJSON(f io.Reader) (Story, error) {
 	dec := json.NewDecoder(f)
