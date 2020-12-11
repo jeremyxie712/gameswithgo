@@ -9,11 +9,11 @@ import (
 	"text/template"
 )
 
-type pathHand struct {
+type RouteHandler struct {
 	Information info.Information
 }
 
-func (h *pathHand) serveRequests() {
+func (h *RouteHandler) serveRequests() {
 	fileHandler := process.JSONHandler{Information: h.Information}
 	f, err := fileHandler.GetContent()
 	if err != nil {
@@ -24,7 +24,7 @@ func (h *pathHand) serveRequests() {
 	http.ListenAndServe(":"+h.Information.GetPort(), nil)
 }
 
-func (h *pathHand) MapHandler(stories map[string]process.Chapter) http.HandlerFunc {
+func (h *RouteHandler) MapHandler(stories map[string]process.Chapter) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		url := strings.TrimSpace(r.URL.Path)
 		t := template.Must(template.ParseFiles(h.Information.GetTmplPath()))

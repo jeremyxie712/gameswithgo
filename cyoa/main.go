@@ -19,7 +19,7 @@ func main() {
 	if len(*filename) == 0 || *filename == "" || *port == 0 {
 		log.Println("Empty filepath or port, please check.")
 	}
-	config := info.Information{FilePath: *filename, LisPort: strconv.Itoa(*port), TemPath: *tplPath}
-	hand := route_handler.pathHand{info.Information: config}
+	cfig := info.Information{FilePath: *filename, LisPort: strconv.Itoa(*port), TemPath: *tplPath}
+	hand := route_handler.RouteHandler{Information: cfig}
 	hand.serveRequests()
 }
