@@ -9,11 +9,11 @@ import (
 	"text/template"
 )
 
-type handler struct {
+type pathHandler struct {
 	Information info.Information
 }
 
-func (h *handler) serveHTTP() {
+func (h *pathHandler) serveHTTP() {
 	fileHandler := cyoa.JSONHandler{Information: h.Information}
 	f, err := fileHandler.GetContent()
 	if err != nil {
@@ -21,10 +21,10 @@ func (h *handler) serveHTTP() {
 	}
 	urlHandler := h.MapHandler(f)
 	http.HandleFunc("/", urlHandler)
-	http.ListenAndServe(h.Information.GetPort(), nil)
+	http.ListenAndServe(":"+h.Information.GetPort(), nil)
 }
 
-func (h *handler) MapHandler(stories map[string]cyoa.Chapter) http.HandlerFunc {
+func (h *pathHandler) MapHandler(stories map[string]cyoa.Chapter) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		url := strings.TrimSpace(r.URL.Path)
 		t := template.Must(template.ParseFiles(h.Information.GetTmplPath()))

@@ -3,14 +3,14 @@ package info
 //The Information struct contains three key elements, the file path,
 //the listening port and the template path
 type Information struct {
-	filePath string
+	FilePath string
 	LisPort  string
-	tmplPath string
+	TemPath  string
 }
 
 //Return the file path
 func (cfig *Information) GetFilePath() string {
-	path := cfig.filePath
+	path := cfig.FilePath
 	return path
 }
 
@@ -20,8 +20,8 @@ func (cfig *Information) GetPort() string {
 	return port
 }
 
-//Return the template path
+//GetTemplPath returns the template path
 func (cfig *Information) GetTmplPath() string {
-	tplPath := cfig.tmplPath
+	tplPath := cfig.TemPath
 	return tplPath
 }

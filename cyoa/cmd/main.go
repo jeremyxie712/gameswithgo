@@ -2,11 +2,9 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"gameswithgo/cyoa"
+	"gameswithgo/cyoa/info"
 	"log"
-	"net/http"
-	"os"
+	"strconv"
 )
 
 const (
@@ -20,17 +18,12 @@ var (
 
 func main() {
 	flag.Parse()
-	f, err := os.Open(*filename)
-	if err != nil {
-		panic(err)
-	}
-	story, err := cyoa.ParseJSON(f)
-	if err != nil {
-		panic(err)
-	}
 
-	h := cyoa.NewHandler(story, nil)
-	fmt.Printf("Started server at Port %d\n", *port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), h))
+	if len(*filename) == 0 || *filename == "" || *port == 0 {
+		log.Println("Empty filepath or port, please check.")
+	}
+	config := info.Information{FilePath: *filename, LisPort: strconv.Itoa(*port), TemPath: templateForStory}
+	handler := path_handler.pathHandler{config}
+	handler.serveHTTP()
 
 }
