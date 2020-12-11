@@ -9,9 +9,16 @@ import (
 	"os"
 )
 
+const (
+	templateForStory = "/Users/JeremyXie/go/src/gameswithgo/cyoa/cmd/index.html"
+)
+
+var (
+	filename = flag.String("file", "/Users/JeremyXie/go/src/gameswithgo/cyoa/gopher.json", "the JSON file with CYOA story")
+	port     = flag.Int("port", 8080, "the port to start CYOA Web Application")
+)
+
 func main() {
-	filename := flag.String("file", "/Users/JeremyXie/go/src/gameswithgo/cyoa/gopher.json", "the JSON file with CYOA story")
-	port := flag.Int("port", 8080, "the port to start CYOA Web Application")
 	flag.Parse()
 	f, err := os.Open(*filename)
 	if err != nil {

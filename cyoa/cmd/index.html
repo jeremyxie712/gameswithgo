@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
@@ -15,7 +15,7 @@
             {{end}}
         </ul>
     </body>
-</html>
+</html> -->
 
 <!-- 
 type storyarc struct {
@@ -29,3 +29,31 @@ type options struct {
 	arc  string `json:"arc"`
 }
 -->
+
+
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Title}}</title>
+</head>
+<body>
+    <h1>{{.Title}}</h1>
+    <div class="story-content">
+        {{range .Story}}
+            <p>{{.}}</p>
+        {{end}}
+    </div>
+    <div class="variations-links">
+        {{if .Options }}
+            <ul>
+                {{range .Options}}
+                    <li class="link-container">
+                        <a href="{{.Arc}}">{{.Text}}</a>
+                    </li>
+                {{end}}
+            </ul>
+        {{else}}
+            <p ><b>The End !</b></p>
+        {{end}}
+    </div>
+</body>
