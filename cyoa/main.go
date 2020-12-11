@@ -20,6 +20,6 @@ func main() {
 		log.Println("Empty filepath or port, please check.")
 	}
 	config := info.Information{FilePath: *filename, LisPort: strconv.Itoa(*port), TemPath: *tplPath}
-	hand := handler.pathHandler{config}
+	hand := route_handler.pathHand{info.Information: config}
 	hand.serveHTTP()
 }
