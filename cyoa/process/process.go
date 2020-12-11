@@ -1,4 +1,4 @@
-package cyoa
+package process
 
 import (
 	"encoding/json"

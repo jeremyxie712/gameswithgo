@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"gameswithgo/cyoa"
 	"gameswithgo/cyoa/info"
+	"gameswithgo/cyoa/process"
 	"log"
 	"net/http"
 	"strings"
@@ -14,7 +14,7 @@ type pathHandler struct {
 }
 
 func (h *pathHandler) serveHTTP() {
-	fileHandler := cyoa.JSONHandler{Information: h.Information}
+	fileHandler := process.JSONHandler{Information: h.Information}
 	f, err := fileHandler.GetContent()
 	if err != nil {
 		log.Fatal(err)
@@ -24,7 +24,7 @@ func (h *pathHandler) serveHTTP() {
 	http.ListenAndServe(":"+h.Information.GetPort(), nil)
 }
 
-func (h *pathHandler) MapHandler(stories map[string]cyoa.Chapter) http.HandlerFunc {
+func (h *pathHandler) MapHandler(stories map[string]process.Chapter) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		url := strings.TrimSpace(r.URL.Path)
 		t := template.Must(template.ParseFiles(h.Information.GetTmplPath()))
