@@ -36,20 +36,32 @@ var tpl *template.Template
 var defaultHandlerTmpl = `
 <!DOCTYPE html>
 <head>
-    <meta charset="utf-8">
-    <title>Choose Your Own Adventure</title>
-</head>
-<body>
-    <h1>{{.Title}}</h1>
-        {{range .Paragraphs}}
-            <p>{{.}}</p>
-        {{end}}
-    <ul>
-        {{range .Options}}
-            <li> <a href="/{{.Arc}}">{{.Text}}</a></li>
-        {{end}}
-    </ul>
-</body>`
+    <title>{{.Title}}</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body class="grey lighten-4">
+    <div class="row">
+        <div class="col m12">
+          <div class="card large horizontal z-depth-4 brown white-text">
+            <div class="card-stacked">
+              <h2 class="card-title">{{.Title}}</h2>
+              <div class="card-content">
+                {{range .Story}}
+                  <p>{{.}}</p>
+                {{end}}
+              </div>
+              <div class="card-action">
+                {{range .Options}}
+                  <a href="{{.Arc}}">{{.Text}}</p>
+                {{end}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </body>`
 
 func ParseJSON(f io.Reader) (Story, error) {
 	dec := json.NewDecoder(f)
