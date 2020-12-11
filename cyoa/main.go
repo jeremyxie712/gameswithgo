@@ -21,5 +21,5 @@ func main() {
 	}
 	config := info.Information{FilePath: *filename, LisPort: strconv.Itoa(*port), TemPath: *tplPath}
 	hand := route_handler.pathHand{info.Information: config}
-	hand.serveHTTP()
+	hand.serveRequests()
 }

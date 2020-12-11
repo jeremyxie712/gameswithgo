@@ -13,7 +13,7 @@ type pathHand struct {
 	Information info.Information
 }
 
-func (h *pathHand) serveHTTP() {
+func (h *pathHand) serveRequests() {
 	fileHandler := process.JSONHandler{Information: h.Information}
 	f, err := fileHandler.GetContent()
 	if err != nil {
