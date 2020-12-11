@@ -19,7 +19,9 @@ func (h *handler) serveHTTP() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	url P
+	urlHandler := h.MapHandler(f)
+	http.HandleFunc("/", urlHandler)
+	http.ListenAndServe(h.Information.GetPort(), nil)
 }
 
 func (h *handler) MapHandler(stories map[string]cyoa.Chapter) http.HandlerFunc {
