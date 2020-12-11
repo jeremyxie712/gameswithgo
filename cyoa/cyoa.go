@@ -70,10 +70,11 @@ func NewHandler(s Story, tmpl *template.Template) http.Handler {
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	path := strings.TrimSpace(r.URL.Path)
-	if path == "" || path == "/" {
+	if path == "" || path == "/" { //This is to prevent goes to localhost port but no path
 		path = "/intro"
 	}
-	path = path[1:]
+	path = path[1:] // "/intro" --> "intro"
+	//   ["intro"]
 	if chapter, ok := h.s[path]; ok {
 		err := h.t.Execute(w, chapter)
 		if err != nil {
